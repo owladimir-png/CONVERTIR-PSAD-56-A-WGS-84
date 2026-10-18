@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Convertidor UTM PSAD56 ↔ WGS84 para Perú | Gratis</title>
+<meta name="description" content="Convierte coordenadas UTM entre PSAD56 y WGS84 en Perú (zonas 17, 18 y 19 Sur). Gratis, rápido y por lotes. Para topografía e ingeniería.">
+
+<!--
+  ===== ANUNCIOS (Google AdSense) =====
+  1. Publica esta página en tu propio dominio (AdSense no aprueba páginas en hosts ajenos).
+  2. Crea tu cuenta en adsense.google.com y agrega tu dominio.
+  3. Cuando te aprueben, descomenta la línea siguiente y cambia ca-pub-XXXXXXXXXXXXXXXX por tu ID.
+  4. En cada <ins class="adsbygoogle"> de abajo, pon tu data-ad-client y tu data-ad-slot.
+-->
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+<style>
+:root{
+  --bg:#0e1b2a; --bg2:#13263a; --card:#fffdf7; --ink:#1b2733; --muted:#5d6b78;
+  --accent:#f28c1b; --accent2:#e0720a; --green:#2f8f5b; --line:#d9d2bf; --err:#c0392b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+.topo{position:fixed;inset:0;z-index:0;opacity:.18;pointer-events:none}
+header{position:relative;z-index:1;padding:36px 20px 28px;text-align:center;color:#fff}
+.badge{display:inline-block;background:rgba(242,140,27,.18);color:#ffc58a;border:1px solid rgba(242,140,27,.5);padding:4px 12px;border-radius:20px;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+h1{margin:14px 0 8px;font-size:clamp(1.7rem,5vw,2.7rem);line-height:1.15}
+h1 span{color:var(--accent)}
+header p{max-width:640px;margin:0 auto;color:#b9c7d6}
+main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 16px 40px}
+.card{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.35);border-top:5px solid var(--accent);margin-bottom:20px}
+.card h2{margin:0 0 14px;font-size:1.15rem;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:1rem;background:#fff;color:var(--ink);font-family:inherit}
+textarea{font-family:Consolas,monospace;min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(242,140,27,.2)}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;padding:10px;border:1.5px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tab.on{background:var(--bg2);color:#fff;border-color:var(--bg2)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+button.main{background:var(--accent);color:#fff;border:0;padding:13px 26px;font-size:1.05rem;font-weight:700;border-radius:8px;cursor:pointer;box-shadow:0 3px 0 var(--accent2)}
+button.main:hover{background:var(--accent2)}
+button.sec{background:#fff;border:1.5px solid var(--line);padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:600;color:var(--ink)}
+button.sec:hover{border-color:var(--accent)}
+.swap{align-self:end}
+.result{margin-top:18px;background:#f4f0e3;border:1.5px dashed var(--line);border-radius:10px;padding:16px;display:none}
+.result.show{display:block}
+.big{font-family:Consolas,monospace;font-size:1.25rem;font-weight:700;color:var(--green)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px}
+.kv div{background:#fff;border-radius:8px;padding:10px 12px;border:1px solid var(--line)}
+.kv small{display:block;color:var(--muted);text-transform:uppercase;font-size:.7rem;letter-spacing:.05em}
+.err{color:var(--err);font-weight:600;margin-top:12px;display:none}
+table{width:100%;border-collapse:collapse;font-family:Consolas,monospace;font-size:.9rem;margin-top:10px}
+th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:right}
+th{background:var(--bg2);color:#fff;font-family:"Segoe UI",sans-serif;font-size:.78rem;text-transform:uppercase}
+.ad{display:block;text-align:center;margin:20px 0;min-height:90px}
+.ad-ph{border:2px dashed #6b8299;color:#9db2c6;border-radius:10px;padding:26px 10px;font-size:.85rem;background:rgba(255,255,255,.04)}
+.note{font-size:.85rem;color:var(--muted)}
+.note b{color:var(--ink)}
+details{margin-top:12px}
+summary{cursor:pointer;font-weight:600}
+article h3{margin:18px 0 6px}
+article p,article li{color:#34414d}
+footer{position:relative;z-index:1;text-align:center;color:#8aa0b5;font-size:.8rem;padding:10px 16px 30px}
+footer a{color:#ffc58a}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<!-- Fondo de curvas de nivel -->
+<svg class="topo" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <g fill="none" stroke="#f28c1b" stroke-width="1.2">
+    <path d="M-20 420 C120 300 240 480 380 380 S620 260 820 360"/>
+    <path d="M-20 380 C120 270 240 440 380 345 S620 225 820 325"/>
+    <path d="M-20 340 C120 240 240 400 380 310 S620 190 820 290"/>
+    <path d="M-20 300 C120 210 240 360 380 275 S620 155 820 255"/>
+    <path d="M-20 260 C120 180 240 320 380 240 S620 120 820 220"/>
+    <path d="M-20 220 C120 150 240 280 380 205 S620 85 820 185"/>
+    <path d="M-20 500 C140 390 260 560 400 470 S640 360 820 450"/>
+    <path d="M-20 540 C140 430 260 590 400 510 S640 400 820 490"/>
+    <ellipse cx="560" cy="130" rx="150" ry="70"/><ellipse cx="560" cy="130" rx="110" ry="50"/>
+    <ellipse cx="560" cy="130" rx="70" ry="30"/><ellipse cx="560" cy="130" rx="30" ry="12"/>
+  </g>
+</svg>
+
+<header>
+  <span class="badge">Topografía · Ingeniería · Perú</span>
+  <h1>Convertidor de coordenadas <span>UTM</span><br>PSAD56 ⇄ WGS84</h1>
+  <p>Cambia tus coordenadas entre datums en segundos. Zonas 17, 18 y 19 Sur. Un punto o cientos a la vez.</p>
+</header>
+
+<main>
+
+  <!-- ANUNCIO SUPERIOR -->
+  <div class="ad" id="ad-top">
+    <!-- Reemplaza este bloque por tu código de AdSense (anuncio adaptable / responsive):
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="1111111111" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+    <div class="ad-ph">Espacio publicitario (banner superior)</div>
+  </div>
+
+  <section class="card">
+    <h2>📐 Datos de entrada</h2>
+    <div class="tabs">
+      <button class="tab on" id="tab1" type="button">Un punto</button>
+      <button class="tab" id="tab2" type="button">Varios puntos</button>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label for="dIn">Datum de origen</label>
+        <select id="dIn"><option value="PSAD56">PSAD56</option><option value="WGS84">WGS84</option></select>
+      </div>
+      <div class="swap">
+        <button class="sec" id="swapBtn" type="button" title="Invertir">⇄ Invertir</button>
+      </div>
+      <div>
+        <label for="dOut">Datum de destino</label>
+        <select id="dOut"><option value="WGS84">WGS84</option><option value="PSAD56">PSAD56</option></select>
+      </div>
+      <div>
+        <label for="zone">Zona UTM</label>
+        <select id="zone"><option value="17">17 Sur</option><option value="18" selected>18 Sur</option><option value="19">19 Sur</option></select>
+      </div>
+    </div>
+
+    <div id="single" style="margin-top:16px">
+      <div class="grid">
+        <div><label for="east">Este (m)</label><input id="east" inputmode="decimal" placeholder="Ej: 542300.50"></div>
+        <div><label for="north">Norte (m)</label><input id="north" inputmode="decimal" placeholder="Ej: 9034500.25"></div>
+      </div>
+    </div>
+
+    <div id="multi" class="hidden" style="margin-top:16px">
+      <label for="bulk">Un punto por línea: Este Norte (separados por espacio, coma, tab o punto y coma)</label>
+      <textarea id="bulk" placeholder="542300.50 9034500.25&#10;542410.10 9034620.80"></textarea>
+    </div>
+
+    <details>
+      <summary>⚙️ Parámetros de transformación (avanzado)</summary>
+      <p class="note">Traslación geocéntrica PSAD56 → WGS84 en metros. El valor por defecto es el promedio para Perú (NIMA/DMA TR8350.2). Si tu entidad exige otros parámetros, escríbelos aquí.</p>
+      <div class="grid">
+        <div><label for="dx">ΔX</label><input id="dx" value="-258"></div>
+        <div><label for="dy">ΔY</label><input id="dy" value="176"></div>
+        <div><label for="dz">ΔZ</label><input id="dz" value="-371"></div>
+      </div>
+    </details>
+
+    <div class="row">
+      <button class="main" id="go" type="button">Convertir ▶</button>
+      <button class="sec" id="clr" type="button">Limpiar</button>
+    </div>
+    <div class="err" id="err"></div>
+
+    <div class="result" id="res"></div>
+  </section>
+
+  <!-- ANUNCIO CENTRAL -->
+  <div class="ad" id="ad-mid">
+    <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="2222222222" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+    <div class="ad-ph">Espacio publicitario (centro)</div>
+  </div>
+
+  <section class="card">
+    <article>
+      <h2>📘 ¿Por qué cambian las coordenadas entre PSAD56 y WGS84?</h2>
+      <p>En Perú, la cartografía antigua (cartas del IGN, catastro y muchos planos) está en <b>PSAD56</b>, basado en el elipsoide Internacional de 1924. Hoy el estándar es <b>WGS84</b> (y SIRGAS, prácticamente igual para uso en ingeniería), que usan el GPS y los equipos modernos. Mezclarlos genera un desplazamiento de aproximadamente <b>200 a 400 metros</b> (según la zona del país) en un mismo punto.</p>
+      <h3>¿Cómo usarlo?</h3>
+      <ol>
+        <li>Elige el datum de origen y el de destino.</li>
+        <li>Selecciona la zona UTM (en la costa norte y selva norte suele ser 17 o 18; el sur y Puno, 19).</li>
+        <li>Ingresa Este y Norte y presiona <b>Convertir</b>.</li>
+      </ol>
+      <p class="note"><b>Aviso:</b> la conversión usa una transformación de parámetros promedio, con una precisión típica de unos pocos metros. Para trabajos de alta precisión (catastro, límites, obras de detalle) usa los parámetros oficiales de la entidad que te lo exige o una grilla de transformación.</p>
+    </article>
+  </section>
+
+  <!-- ANUNCIO INFERIOR -->
+  <div class="ad" id="ad-bot">
+    <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="3333333333" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+    <div class="ad-ph">Espacio publicitario (inferior)</div>
+  </div>
+</main>
+
+<footer>
+  Herramienta gratuita para topografía e ingeniería en Perú.<br>
+  Los cálculos se hacen en tu navegador; no se guarda ninguna coordenada.<br>
+  <a href="#">Política de privacidad</a> · <a href="#">Contacto</a>
+</footer>
+
+<script>
+/* ===== Núcleo geodésico ===== */
+const DATUMS = {
+  WGS84:  {a:6378137,   f:1/298.257223563},
+  PSAD56: {a:6378388,   f:1/297}
+};
+const K0 = 0.9996, E0 = 500000, N0S = 10000000;
+const rad = d => d*Math.PI/180, deg = r => r*180/Math.PI;
+
+function coefs(f){
+  const n=f/(2-f),n2=n*n,n3=n2*n,n4=n3*n;
+  return {
+    n, A:(1/(1+n))*(1+n2/4+n4/64),
+    al:[n/2-2*n2/3+5*n3/16+41*n4/180, 13*n2/48-3*n3/5+557*n4/1440, 61*n3/240-103*n4/140, 49561*n4/161280],
+    be:[n/2-2*n2/3+37*n3/96-n4/360, n2/48+n3/15-437*n4/1440, 17*n3/480-37*n4/840, 4397*n4/161280],
+    de:[2*n-2*n2/3-2*n3+116*n4/45, 7*n2/3-8*n3/5-227*n4/45, 56*n3/15-136*n4/35, 4279*n4/630]
+  };
+}
+
+function utmToLL(E,N,zone,d){
+  const a=d.a, f=d.f, c=coefs(f), Ax=a*c.A;
+  const xi=(N-N0S)/(K0*Ax), eta=(E-E0)/(K0*Ax);
+  let xi2=xi, eta2=eta;
+  for(let j=1;j<=4;j++){
+    xi2 -= c.be[j-1]*Math.sin(2*j*xi)*Math.cosh(2*j*eta);
+    eta2-= c.be[j-1]*Math.cos(2*j*xi)*Math.sinh(2*j*eta);
+  }
+  const chi=Math.asin(Math.sin(xi2)/Math.cosh(eta2));
+  let phi=chi;
+  for(let j=1;j<=4;j++) phi+=c.de[j-1]*Math.sin(2*j*chi);
+  const lam0=rad(zone*6-183);
+  const lam=lam0+Math.atan2(Math.sinh(eta2),Math.cos(xi2));
+  return {lat:phi, lon:lam};
+}
+
+function llToUTM(lat,lon,zone,d){
+  const a=d.a, f=d.f, e=Math.sqrt(f*(2-f)), c=coefs(f), Ax=a*c.A;
+  const lam=lon-rad(zone*6-183), s=Math.sin(lat);
+  const t=Math.sinh(Math.atanh(s)-e*Math.atanh(e*s));
+  const xi1=Math.atan2(t,Math.cos(lam));
+  const eta1=Math.atanh(Math.sin(lam)/Math.sqrt(1+t*t));
+  let xi=xi1, eta=eta1;
+  for(let j=1;j<=4;j++){
+    xi += c.al[j-1]*Math.sin(2*j*xi1)*Math.cosh(2*j*eta1);
+    eta+= c.al[j-1]*Math.cos(2*j*xi1)*Math.sinh(2*j*eta1);
+  }
+  return {E:E0+K0*Ax*eta, N:N0S+K0*Ax*xi};
+}
+
+function llToXYZ(lat,lon,d){
+  const e2=d.f*(2-d.f), s=Math.sin(lat), Nn=d.a/Math.sqrt(1-e2*s*s);
+  return [Nn*Math.cos(lat)*Math.cos(lon), Nn*Math.cos(lat)*Math.sin(lon), Nn*(1-e2)*s];
+}
+function xyzToLL(X,Y,Z,d){
+  const e2=d.f*(2-d.f), p=Math.hypot(X,Y), lon=Math.atan2(Y,X);
+  let lat=Math.atan2(Z,p*(1-e2));
+  for(let i=0;i<10;i++){
+    const s=Math.sin(lat), Nn=d.a/Math.sqrt(1-e2*s*s);
+    lat=Math.atan2(Z+e2*Nn*s,p);
+  }
+  return {lat,lon};
+}
+
+/* shift = traslación PSAD56 -> WGS84 */
+function convert(E,N,zoneIn,from,to,zoneOut,shift){
+  const ll=utmToLL(E,N,zoneIn,DATUMS[from]);
+  let res=ll;
+  if(from!==to){
+    const [X,Y,Z]=llToXYZ(ll.lat,ll.lon,DATUMS[from]);
+    const sg = (from==="PSAD56") ? 1 : -1;
+    res=xyzToLL(X+sg*shift[0],Y+sg*shift[1],Z+sg*shift[2],DATUMS[to]);
+  }
+  const u=llToUTM(res.lat,res.lon,zoneOut,DATUMS[to]);
+  return {E:u.E,N:u.N,lat:deg(res.lat),lon:deg(res.lon)};
+}
+
+/* ===== Interfaz ===== */
+const $=id=>document.getElementById(id);
+let mode="single";
+
+$("tab1").onclick=()=>setMode("single");
+$("tab2").onclick=()=>setMode("multi");
+function setMode(m){
+  mode=m;
+  $("tab1").classList.toggle("on",m==="single");
+  $("tab2").classList.toggle("on",m==="multi");
+  $("single").classList.toggle("hidden",m!=="single");
+  $("multi").classList.toggle("hidden",m!=="multi");
+  $("res").classList.remove("show"); $("err").style.display="none";
+}
+$("swapBtn").onclick=()=>{const a=$("dIn").value;$("dIn").value=$("dOut").value;$("dOut").value=a;};
+$("dIn").onchange=()=>{ $("dOut").value=$("dIn").value==="WGS84"?"PSAD56":"WGS84"; };
+$("dOut").onchange=()=>{ $("dIn").value=$("dOut").value==="WGS84"?"PSAD56":"WGS84"; };
+$("clr").onclick=()=>{$("east").value="";$("north").value="";$("bulk").value="";$("res").classList.remove("show");$("err").style.display="none";};
+
+const num=s=>parseFloat(String(s).trim().replace(",","."));
+const fmt=(v,n=3)=>v.toLocaleString("en-US",{minimumFractionDigits:n,maximumFractionDigits:n,useGrouping:false});
+const showErr=m=>{$("err").textContent=m;$("err").style.display="block";$("res").classList.remove("show");};
+
+function validPoint(E,N){
+  return isFinite(E)&&isFinite(N)&&E>100000&&E<900000&&N>7000000&&N<10000000;
+}
+
+$("go").onclick=()=>{
+  $("err").style.display="none";
+  const from=$("dIn").value,to=$("dOut").value,zone=+$("zone").value;
+  const shift=[num($("dx").value),num($("dy").value),num($("dz").value)];
+  if(shift.some(isNaN)) return showErr("Revisa los parámetros avanzados (ΔX, ΔY, ΔZ).");
+  const res=$("res");
+
+  if(mode==="single"){
+    const E=num($("east").value),N=num($("north").value);
+    if(!validPoint(E,N)) return showErr("Coordenadas fuera de rango para Perú (hemisferio Sur). Revisa Este (100 000–900 000) y Norte (7 000 000–10 000 000).");
+    const r=convert(E,N,zone,from,to,zone,shift);
+    res.innerHTML=`<div>Resultado en <b>${to}</b> · Zona ${zone} Sur</div>
+      <div class="kv">
+        <div><small>Este</small><span class="big">${fmt(r.E)}</span></div>
+        <div><small>Norte</small><span class="big">${fmt(r.N)}</span></div>
+        <div><small>Latitud</small>${fmt(r.lat,7)}°</div>
+        <div><small>Longitud</small>${fmt(r.lon,7)}°</div>
+        <div><small>Desplazamiento Este</small>${fmt(r.E-E,2)} m</div>
+        <div><small>Desplazamiento Norte</small>${fmt(r.N-N,2)} m</div>
+      </div>
+      <div class="row"><button class="sec" id="cp">📋 Copiar Este, Norte</button></div>`;
+    res.classList.add("show");
+    $("cp").onclick=()=>{navigator.clipboard.writeText(fmt(r.E)+"\t"+fmt(r.N));$("cp").textContent="✔ Copiado";};
+  } else {
+    const lines=$("bulk").value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    if(!lines.length) return showErr("Pega al menos un punto.");
+    const rows=[];let bad=0;
+    lines.forEach((l,i)=>{
+      const p=l.split(/[\s,;\t]+/);
+      const E=num(p[0]),N=num(p[1]);
+      if(p.length<2||!validPoint(E,N)){bad++;rows.push({i:i+1,bad:true,txt:l});return;}
+      const r=convert(E,N,zone,from,to,zone,shift);
+      rows.push({i:i+1,E:r.E,N:r.N});
+    });
+    let h=`<div>Resultado en <b>${to}</b> · Zona ${zone} Sur${bad?` · <span style="color:var(--err)">${bad} línea(s) inválida(s)</span>`:""}</div>
+      <table><tr><th>#</th><th>Este</th><th>Norte</th></tr>`;
+    rows.forEach(r=>{h+=r.bad?`<tr><td>${r.i}</td><td colspan="2" style="color:var(--err);text-align:left">Inválido: ${r.txt.replace(/</g,"&lt;")}</td></tr>`:`<tr><td>${r.i}</td><td>${fmt(r.E)}</td><td>${fmt(r.N)}</td></tr>`;});
+    h+=`</table><div class="row"><button class="sec" id="cp">📋 Copiar todo (para Excel)</button></div>`;
+    res.innerHTML=h;res.classList.add("show");
+    $("cp").onclick=()=>{
+      navigator.clipboard.writeText(rows.filter(r=>!r.bad).map(r=>fmt(r.E)+"\t"+fmt(r.N)).join("\n"));
+      $("cp").textContent="✔ Copiado";
+    };
+  }
+};
+</script>
+</body>
+</html>
